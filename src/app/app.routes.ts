@@ -16,13 +16,16 @@ import { ButtonsComponent } from './pages/ui-elements/buttons/buttons.component'
 import { ImagesComponent } from './pages/ui-elements/images/images.component';
 import { VideosComponent } from './pages/ui-elements/videos/videos.component';
 import { SignInComponent } from './pages/auth-pages/sign-in/sign-in.component';
-import { SignUpComponent } from './pages/auth-pages/sign-up/sign-up.component';
 import { CalenderComponent } from './pages/calender/calender.component';
+import { AuthGuard } from './guards/auth.guard';
+import { UnauthorizedComponent } from './pages/other-page/unauthorized/unauthorized.component';
 
 export const routes: Routes = [
   {
     path:'dashboard',
     component:AppLayoutComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['Admin'] },
     children:[
       {
         path: '',
@@ -109,6 +112,12 @@ export const routes: Routes = [
     path:'',
     component:SignInComponent,
     title:'Angular Sign In Dashboard | TailAdmin - Angular Admin Dashboard Template'
+  },
+  // unauthorized page
+  {
+    path:'unauthorized',
+    component:UnauthorizedComponent,
+    title:'Unauthorized | TailAdmin - Angular Admin Dashboard Template'
   },
   // error pages
   {
