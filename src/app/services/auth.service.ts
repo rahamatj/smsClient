@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Observable, tap, BehaviorSubject } from 'rxjs';
+import { Observable, tap, BehaviorSubject, catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -24,10 +24,15 @@ export class AuthService {
       }
     ).pipe(
       tap(res => {
+        console.log('Login response:', res); // Log the entire response for debugging
+
         if (res.accessToken && res.refreshToken) {
           localStorage.setItem('accessToken', res.accessToken);
           localStorage.setItem('refreshToken', res.refreshToken);
-          localStorage.setItem('tokenExpiry', res.expiresIn || '3600'); // Store expiry in seconds
+          
+          // Extract expiry from token or use provided value
+          const expiryTime = this.getTokenExpiry(res.accessToken) || (res.expiresIn ? parseInt(res.expiresIn, 10) : Math.floor(Date.now() / 1000) + 3600);
+          localStorage.setItem('tokenExpiry', expiryTime.toString());
           
           // Store user data with role
           if (res.user) {
@@ -42,19 +47,23 @@ export class AuthService {
 
   refreshToken(): Observable<any> {
     const refreshToken = localStorage.getItem('refreshToken');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const userId = user?.id;
 
-    if (!refreshToken) {
+    if (!refreshToken || !userId) {
       this.logout();
       return new Observable(observer => {
-        observer.error('No refresh token available');
+        observer.error('No refresh token or user ID available');
       });
     }
 
     return this.http.post<any>(
       `${environment.apiUrl}/api/auth/refreshtoken`,
-      { refreshToken }
+      { userId, refreshToken }
     ).pipe(
       tap(res => {
+        console.log(res);
+
         if (res.accessToken) {
           localStorage.setItem('accessToken', res.accessToken);
           
@@ -63,14 +72,19 @@ export class AuthService {
             localStorage.setItem('refreshToken', res.refreshToken);
           }
           
-          // Update expiry if provided
-          if (res.expiresIn) {
-            localStorage.setItem('tokenExpiry', res.expiresIn);
-          }
+          // Extract expiry from token or use provided value
+          const expiryTime = this.getTokenExpiry(res.accessToken) || (res.expiresIn ? parseInt(res.expiresIn, 10) : Math.floor(Date.now() / 1000) + 3600);
+          localStorage.setItem('tokenExpiry', expiryTime.toString());
           
           this.isAuthenticatedSubject.next(true);
+        } else {
+          throw new Error('No access token in refresh response');
         }
-      })
+      }),
+      catchError(err => {
+      // this.logout();
+      return throwError(() => err);
+  })
     );
   }
 
@@ -80,7 +94,7 @@ export class AuthService {
     localStorage.removeItem('tokenExpiry');
     localStorage.removeItem('user');
     this.isAuthenticatedSubject.next(false);
-    this.router.navigate(['/sign-in']);
+    this.router.navigate(['/']);
   }
 
   isLoggedIn(): boolean {
@@ -112,5 +126,35 @@ export class AuthService {
     const bufferTime = 60000; // 1 minute buffer
 
     return currentTime > expiryTime - bufferTime;
+  }
+
+  /**
+   * Extract expiry time from JWT token
+   * JWT tokens have format: header.payload.signature
+   * The payload contains an 'exp' claim with expiry in seconds
+   */
+  private getTokenExpiry(token: string): number | null {
+    try {
+      if (!token) return null;
+      
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        console.warn('Invalid JWT token format');
+        return null;
+      }
+
+      // Decode the payload (second part)
+      const payload = JSON.parse(atob(parts[1]));
+      
+      // Return expiry time in seconds (JWT uses seconds)
+      if (payload.exp) {
+        return payload.exp;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error extracting token expiry:', error);
+      return null;
+    }
   }
 }

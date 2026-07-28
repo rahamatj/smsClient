@@ -40,6 +40,8 @@ export class SigninFormComponent {
 
   showPassword = false;
   isChecked = false;
+  isLoading = false;
+  errorMessage = '';
 
   username = '';
   password = '';
@@ -49,10 +51,13 @@ export class SigninFormComponent {
   }
 
   onSignIn() {
+    this.errorMessage = '';
+    
     if (this.form.valid) {
-      console.log('Form Values:', this.form.value);
+      this.isLoading = true;
       const username = this.form.get('username')?.value || '';
       const password = this.form.get('password')?.value || '';
+      
       console.log('Username:', username);
       console.log('Password:', password);
       console.log('Keep logged in:', this.isChecked);
@@ -60,15 +65,22 @@ export class SigninFormComponent {
       this.authService.login(username, password)
         .subscribe({
           next: (response) => {
+            console.log('Login successful, response:', response);
+            console.log('Stored user data:', localStorage.getItem('user'));
+            console.log('Stored access token:', localStorage.getItem('accessToken'));
+            this.isLoading = false;
             this.router.navigate(['/dashboard']);
           },
           error: (error) => {
+            this.isLoading = false;
             console.error('Login failed:', error);
+            this.errorMessage = error?.error?.message || 'Login failed. Please try again.';
           }
         });
 
     } else {
       console.log('Form is invalid');
+      this.errorMessage = 'Please fill in all required fields correctly.';
     }
   }
 }
