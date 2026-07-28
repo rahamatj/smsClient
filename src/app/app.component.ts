@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -12,4 +13,17 @@ import { RouterModule } from '@angular/router';
 })
 export class AppComponent {
   title = 'Angular Ecommerce Dashboard | TailAdmin';
+
+  authService = inject(AuthService);
+
+  ngOnInit(): void {
+    this.authService.refreshToken().subscribe({
+      next: (res) => {
+        console.log('[AppComponent] Token refreshed successfully', res);
+      },
+      error: (err) => {
+        console.error('[AppComponent] Token refresh failed', err);
+      }
+    });
+  }
 }
