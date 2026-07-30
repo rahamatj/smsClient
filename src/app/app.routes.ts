@@ -19,21 +19,36 @@ import { SignInComponent } from './pages/auth-pages/sign-in/sign-in.component';
 import { CalenderComponent } from './pages/calender/calender.component';
 import { AuthGuard } from './guards/auth.guard';
 import { UnauthorizedComponent } from './pages/other-page/unauthorized/unauthorized.component';
+import { AdminComponent } from './shared/components/admin/admin.component';
+import { DashboardComponent } from './shared/components/dashboard/dashboard.component';
 
 export const routes: Routes = [
   {
     path:'dashboard',
     component:AppLayoutComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['admin'] },
+    data: { roles: ['Admin'] },
     children:[
-      {
-        path: '',
-        component: EcommerceComponent,
-        pathMatch: 'full',
-        title:
-          'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
-      },
+        {
+            path: '',
+            component: EcommerceComponent,
+            title:
+                'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
+        },
+        {
+            path: 'users',
+            component: DashboardComponent,
+            title:
+                'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
+            children:[
+                {
+                    path: 'admin',
+                    component: AdminComponent,
+                    title:
+                        'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
+                }
+            ]
+        },
       {
         path:'calendar',
         component:CalenderComponent,
