@@ -1,0 +1,51 @@
+<form method="post">
+    <div>
+        <app-label>Username</app-label>
+        <app-input-field
+                id="username"
+                type="text"
+                [value]="username"
+                [error]="usernameError"
+                (valueChange)="handleUsernameChange($event)"
+                placeholder="Enter your username"
+                [hint]="usernameError ? 'Username required.' : ''"
+        />
+    </div>
+    <div>
+        <app-label>Password</app-label>
+        <app-input-field
+                id="password"
+                type="password"
+                [value]="password"
+                [error]="passwordError"
+                (valueChange)="handlePasswordChange($event)"
+                placeholder="Enter your password"
+                [hint]="passwordError ? 'Password required.' : ''"
+        />
+    </div>
+    <div>
+        <app-label>Confirm Password</app-label>
+        <app-input-field
+                id="confirm-password"
+                type="password"
+                [value]="confirmPassword"
+                [error]="confirmPasswordError"
+                (valueChange)="handleConfirmPasswordChange($event)"
+                placeholder="Enter your password again"
+                [hint]="confirmPasswordError ? 'Password required.' : ''"
+        />
+    </div>
+    <div>
+        <app-label>Role</app-label>
+        <app-select
+                [options]="options"
+                placeholder="Select user role"
+                [value]="role"
+                (valueChange)="handleRoleChange($event)"
+                className="dark:bg-dark-900"
+        ></app-select>
+    </div>
+    <div class="flex items-center gap-5 mt-4">
+        <app-button (click)="onSubmit()" size="sm" variant="primary"> Button Text</app-button>
+    </div>
+</form>

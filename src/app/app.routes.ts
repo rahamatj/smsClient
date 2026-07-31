@@ -19,15 +19,16 @@ import { SignInComponent } from './pages/auth-pages/sign-in/sign-in.component';
 import { CalenderComponent } from './pages/calender/calender.component';
 import { AuthGuard } from './guards/auth.guard';
 import { UnauthorizedComponent } from './pages/other-page/unauthorized/unauthorized.component';
-import { AdminComponent } from './shared/components/admin/admin.component';
-import { DashboardComponent } from './shared/components/dashboard/dashboard.component';
+import { AdminComponent } from '@/pages/admin/admin.component';
+import { DashboardLayoutComponent } from '@/shared/layout/dashboard-layout/dashboard-layout.component';
+import {NewUsersComponent} from "@/pages/new-users/new-users.component";
 
 export const routes: Routes = [
   {
     path:'dashboard',
     component:AppLayoutComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['Admin'] },
+    data: { roles: ['Admin', 'SuperAdmin'] },
     children:[
         {
             path: '',
@@ -37,10 +38,16 @@ export const routes: Routes = [
         },
         {
             path: 'users',
-            component: DashboardComponent,
+            component: DashboardLayoutComponent,
             title:
                 'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
             children:[
+                {
+                    path: 'new',
+                    component: NewUsersComponent,
+                    title:
+                        'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
+                },
                 {
                     path: 'admin',
                     component: AdminComponent,

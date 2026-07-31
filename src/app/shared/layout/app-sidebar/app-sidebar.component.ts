@@ -42,36 +42,40 @@ export class AppSidebarComponent {
       path: "/users",
       subItems: [
           {
+              name: "New User",
+              path: "users/new",
+          },
+          {
               name: "Admin",
               path: "users/admin",
           },
           {
               name: "Student",
-              path: "users/student",
+              path: "student",
           },
           {
               name: "Admission",
-              path: "users/admission",
+              path: "admission",
           },
           {
               name: "Teacher",
-              path: "users/teacher",
+              path: "teacher",
           },
           {
               name: "Teacher Permission",
-              path: "users/teacher_permission",
+              path: "teacher-permission",
           },
           {
               name: "Parent",
-              path: "users/parent",
+              path: "parent",
           },
           {
               name: "Accountant",
-              path: "users/accountant",
+              path: "accountant",
           },
           {
               name: "Librarian",
-              path: "users/librarian",
+              path: "librarian",
           }
       ]
     },
