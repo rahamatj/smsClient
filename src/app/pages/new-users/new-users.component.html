@@ -5,10 +5,10 @@
                 id="username"
                 type="text"
                 [value]="username"
-                [error]="usernameError"
+                [error]="usernameError || usernameExistsError"
                 (valueChange)="handleUsernameChange($event)"
                 placeholder="Enter your username"
-                [hint]="usernameError ? 'Username required.' : ''"
+                [hint]="usernameError ? 'Username required.' : usernameExistsError ? 'Username already exists.' : ''"
         />
     </div>
     <div>
@@ -46,6 +46,6 @@
         ></app-select>
     </div>
     <div class="flex items-center gap-5 mt-4">
-        <app-button (click)="onSubmit()" size="sm" variant="primary"> Button Text</app-button>
+        <app-button (click)="onSubmit()" size="sm" variant="primary" [disabled]="usernameExistsError">Create User</app-button>
     </div>
 </form>

@@ -4,7 +4,7 @@ import {LabelComponent} from '@/shared/components/label/label.component';
 import {SelectComponent} from "@/shared/components/select/select.component";
 import {ButtonComponent} from "@/shared/components/button/button.component";
 import {FormsModule} from "@angular/forms";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import Swal from 'sweetalert2';
 
 @Component({
@@ -21,6 +21,7 @@ export class NewUsersComponent {
     password = '';
     confirmPassword = '';
     role = '6';
+
     options = [
         {value: '0', label: 'Super Admin'},
         {value: '1', label: 'Admin'},
@@ -35,11 +36,23 @@ export class NewUsersComponent {
     passwordError = false;
     confirmPasswordError = false;
     roleError = false;
+    usernameExistsError = false;
 
     handleUsernameChange(value: string | number) {
-        console.log('handleUsernameChange', value);
+        const params = new HttpParams()
+            .set('username', value.toString());
 
-        this.username = value.toString();
+        this.http.get(`${this.api}/api/users/does-username-exist`, { params })
+            .subscribe({
+                next: (data: any) => {
+                    this.username = value.toString();
+                    this.usernameExistsError = data;
+                },
+                error: (err) => {
+                    console.error(err);
+                }
+            })
+
         this.usernameError = this.username.trim() === '';
     }
 
@@ -61,17 +74,12 @@ export class NewUsersComponent {
     }
 
     onSubmit() {
-        console.log('handleSubmit', this.role);
-
         this.http.post(`${this.api}/api/users/new`, {
             username: this.username,
             password: this.password,
             role: Number(this.role),
         }).subscribe({
             next: (data) => {
-                // this.transactionData = [...data];
-                // console.log("data", data);
-
                 Swal.fire({
                     icon: 'success',
                     title: 'Success',
@@ -79,8 +87,6 @@ export class NewUsersComponent {
                 });
             },
             error: (err) => {
-                // console.error(err);
-
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -88,7 +94,5 @@ export class NewUsersComponent {
                 });
             }
         })
-
-        // console.log('handleSubmit', this.role);
     }
 }
