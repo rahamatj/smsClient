@@ -15,15 +15,16 @@ import { FormsModule } from '@angular/forms';
                     [min]="min"
                     [max]="max"
                     [step]="step"
-                    [ngClass]="inputClasses('error')"
+                    [ngClass]="inputClasses('default')"
                     (input)="onInput($event)"
             />
 
             @if (hints.length) {
                 <ul class="mt-1.5 text-xs"
                    [ngClass]="{
-                              'text-error-500': this.error,
-                              'text-success-500': this.success,
+                              'text-error-500': error,
+                              'text-success-500': success,
+                              'text-gray-500': !error && !success
                           }">
                     @for (message of hints; track message) {
                         <li>{{ message }}</li>
@@ -68,7 +69,7 @@ export class InputFieldComponent implements OnInit {
             inputClasses += ` border-error-500 focus:border-error-300 focus:ring-error-500/20 dark:text-error-400 dark:border-error-500 dark:focus:border-error-800`;
         } else if (state === 'success') {
             inputClasses += ` border-success-500 focus:border-success-300 focus:ring-success-500/20 dark:text-success-400 dark:border-success-500 dark:focus:border-success-800`;
-        } else {
+        } else if (state === 'default') {
             inputClasses += ` bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700 dark:text-white/90 dark:focus:border-brand-800`;
         }
         return inputClasses;
