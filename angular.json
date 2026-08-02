@@ -79,6 +79,7 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
+            "sourceMap": true,
             "polyfills": [
               "zone.js",
               "zone.js/testing"

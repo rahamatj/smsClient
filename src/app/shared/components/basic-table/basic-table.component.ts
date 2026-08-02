@@ -1,8 +1,5 @@
 import {CommonModule} from '@angular/common';
 import {Component, OnInit, inject} from '@angular/core';
-import {ButtonComponent} from '@/shared/components/ui/button/button.component';
-import {TableDropdownComponent} from '@/shared/components/common/table-dropdown/table-dropdown.component';
-import {BadgeComponent} from '@/shared/components/ui/badge/badge.component';
 import { HttpClient } from '@angular/common/http';
 
 interface User {
@@ -15,9 +12,6 @@ interface User {
     selector: 'app-basic-table',
     imports: [
         CommonModule,
-        ButtonComponent,
-        TableDropdownComponent,
-        BadgeComponent,
     ],
     templateUrl: './basic-table.component.html',
     styles: ``

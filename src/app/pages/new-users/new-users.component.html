@@ -4,11 +4,9 @@
         <app-input-field
                 id="username"
                 type="text"
-                [value]="username"
-                [error]="usernameError || usernameExistsError"
-                (valueChange)="handleUsernameChange($event)"
+                [(ngModel)]="username"
                 placeholder="Enter your username"
-                [hint]="usernameError ? 'Username required.' : usernameExistsError ? 'Username already exists.' : ''"
+                [validators]="'required | minLength:3 | maxLength:20 | unique'"
         />
     </div>
     <div>
@@ -17,10 +15,8 @@
                 id="password"
                 type="password"
                 [value]="password"
-                [error]="passwordError"
                 (valueChange)="handlePasswordChange($event)"
                 placeholder="Enter your password"
-                [hint]="passwordError ? 'Password required.' : ''"
         />
     </div>
     <div>
@@ -29,10 +25,8 @@
                 id="confirm-password"
                 type="password"
                 [value]="confirmPassword"
-                [error]="confirmPasswordError"
                 (valueChange)="handleConfirmPasswordChange($event)"
                 placeholder="Enter your password again"
-                [hint]="confirmPasswordError ? 'Password required.' : ''"
         />
     </div>
     <div>

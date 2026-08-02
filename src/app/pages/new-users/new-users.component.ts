@@ -14,6 +14,18 @@ import Swal from 'sweetalert2';
     styleUrl: './new-users.component.css',
 })
 export class NewUsersComponent {
+    validators = [
+        {
+            type: 'required',
+            message: 'Username is required.'
+        },
+        {
+            type: 'minLength',
+            value: 3,
+            message: 'Username must be at least 3 characters.'
+        }
+    ];
+
     private http = inject(HttpClient);
     private api = 'http://localhost:5270';
 
@@ -38,27 +50,25 @@ export class NewUsersComponent {
     roleError = false;
     usernameExistsError = false;
 
-    handleUsernameChange(value: string | number) {
-        const params = new HttpParams()
-            .set('username', value.toString());
-
-        this.http.get(`${this.api}/api/users/does-username-exist`, { params })
-            .subscribe({
-                next: (data: any) => {
-                    this.username = value.toString();
-                    this.usernameExistsError = data;
-                },
-                error: (err) => {
-                    console.error(err);
-                }
-            })
-
-        this.usernameError = this.username.trim() === '';
-    }
+    // handleUsernameChange(value: string | number) {
+    //     const params = new HttpParams()
+    //         .set('username', value.toString());
+    //
+    //     this.http.get(`${this.api}/api/users/does-username-exist`, { params })
+    //         .subscribe({
+    //             next: (data: any) => {
+    //                  this.username = value.toString();
+    //                 this.usernameExistsError = data;
+    //             },
+    //             error: (err) => {
+    //                 console.error(err);
+    //             }
+    //         })
+    //
+    //     this.usernameError = this.username.trim() === '';
+    // }
 
     handlePasswordChange(value: string | number) {
-        console.log('handlePasswordChange', value);
-
         this.password = value.toString();
         this.passwordError = this.password.trim() === '';
     }
@@ -79,14 +89,14 @@ export class NewUsersComponent {
             password: this.password,
             role: Number(this.role),
         }).subscribe({
-            next: (data) => {
+            next: () => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Success',
                     text: 'User created successfully!',
                 });
             },
-            error: (err) => {
+            error: () => {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
