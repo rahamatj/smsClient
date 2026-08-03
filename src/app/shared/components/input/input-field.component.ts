@@ -1,5 +1,5 @@
 import {CommonModule} from '@angular/common';
-import {Component, EventEmitter, inject, Input, OnInit, Output, signal} from '@angular/core';
+import {Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
@@ -15,7 +15,7 @@ import { FormsModule } from '@angular/forms';
                     [min]="min"
                     [max]="max"
                     [step]="step"
-                    [ngClass]="inputClasses('default')"
+                    [ngClass]="inputClasses(state)"
                     (input)="onInput($event)"
             />
 
@@ -43,14 +43,10 @@ export class InputFieldComponent implements OnInit {
     @Input() min?: string;
     @Input() max?: string;
     @Input() step?: number;
-    // @Input() disabled: boolean = false;
-    // @Input() success: boolean = false;
-    // @Input() error: boolean = false;
-    // @Input() hint: string = '';
-    // @Input() hints: string[] = [];
     @Input() className: string = '';
     @Input() validators: string = '';
     @Output() valueChange = new EventEmitter<string | number>();
+    @Output() errorChange = new EventEmitter<boolean>();
 
     api: string = 'http://localhost:5270';
     http: HttpClient = inject(HttpClient);
@@ -59,6 +55,8 @@ export class InputFieldComponent implements OnInit {
     success = false;
     disabled = false;
     hints: string[] = [];
+    state: 'default' | 'error' | 'success' | 'disabled' = 'default';
+    private lastUniqueCheckValue = '';
 
     inputClasses(state: any): string {
         let inputClasses = `h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 ${this.className}`;
@@ -91,9 +89,12 @@ export class InputFieldComponent implements OnInit {
         this.hints = [];
         this.error = false;
         this.success = false;
+        this.state = this.disabled ? 'disabled' : 'default';
 
-        let rules = this.validators.split('|').map(rule => rule.trim());
-        let valueText = typeof value === 'string' ? value : String(value ?? '');
+        const rules = this.validators.split('|').map(rule => rule.trim());
+        const valueText = typeof value === 'string' ? value : String(value ?? '');
+        const hasUniqueRule = rules.includes('unique');
+        let hasError = false;
 
         for (const rule of rules) {
             if (!rule) {
@@ -101,51 +102,68 @@ export class InputFieldComponent implements OnInit {
             }
 
             if (rule === 'required' && valueText.trim().length === 0) {
-                this.inputClasses('error');
+                hasError = true;
+
                 this.hints = [...this.hints, 'This field is required.'];
             } else if (rule.startsWith('minLength')) {
                 const minLength = parseInt(rule.split(':')[1], 10);
-                if (valueText.length < minLength) {
-                    this.inputClasses('error');
-                    this.success = false;
+                if (!Number.isNaN(minLength) && valueText.length < minLength) {
+                    hasError = true;
+
                     this.hints = [...this.hints, `Minimum length is ${minLength} characters.`];
                 }
             } else if (rule.startsWith('maxLength')) {
                 const maxLength = parseInt(rule.split(':')[1], 10);
-                if (valueText.length > maxLength) {
-                    this.inputClasses('error');
-                    this.success = false;
+                if (!Number.isNaN(maxLength) && valueText.length > maxLength) {
+                    hasError = true;
+
                     this.hints = [...this.hints, `Maximum length is ${maxLength} characters.`];
                 }
             }
-            else if (rule === 'unique') {
-                this.error = true;
-                this.inputClasses('error');
 
-                let params = new HttpParams();
-                params = params.set('username', valueText.trim());
-
-                this.http.get(`${this.api}/api/users/does-username-exist`, { params })
-                    .subscribe({
-                        next: (data: any) => {
-                            if (data) {
-                                this.inputClasses('error');
-                                this.success = false;
-                                this.hints = [...this.hints, 'Username already exists.'];
-                            } else {
-                                this.inputClasses('success');
-                                this.hints = this.hints.filter(hint => hint !== 'Username already exists.');
-                            }
-                        },
-                        error: (err) => {
-                            console.error(err);
-                        }
-                    });
-            }
         }
 
-        if (!this.error && valueText.length > 0) {
-            this.inputClasses('success');
+        this.error = hasError;
+        this.success = !hasError && valueText.length > 0 && !hasUniqueRule;
+        this.state = this.disabled ? 'disabled' : (this.error ? 'error' : (this.success ? 'success' : 'default'));
+        this.errorChange.emit(this.error);
+
+        if (!hasError && hasUniqueRule && valueText.trim()) {
+            this.checkUnique(valueText.trim());
         }
+    }
+
+    private checkUnique(username: string): void {
+        this.lastUniqueCheckValue = username;
+        let params = new HttpParams();
+        params = params.set('username', username);
+
+        this.http.get(`${this.api}/api/users/does-username-exist`, {params})
+            .subscribe({
+                next: (exists: any) => {
+                    if (this.lastUniqueCheckValue !== username) {
+                        return;
+                    }
+
+                    this.hints = this.hints.filter(hint => hint !== 'Username already exists.');
+
+                    if (exists) {
+                        this.error = true;
+                        this.success = false;
+                        this.state = this.disabled ? 'disabled' : 'error';
+                        this.hints = [...this.hints, 'Username already exists.'];
+                        this.errorChange.emit(true);
+                        return;
+                    }
+
+                    this.error = this.hints.length > 0;
+                    this.success = !this.error && username.length > 0;
+                    this.state = this.disabled ? 'disabled' : (this.error ? 'error' : (this.success ? 'success' : 'default'));
+                    this.errorChange.emit(this.error);
+                },
+                error: (err) => {
+                    console.error(err);
+                }
+            });
     }
 }

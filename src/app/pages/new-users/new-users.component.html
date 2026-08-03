@@ -4,9 +4,11 @@
         <app-input-field
                 id="username"
                 type="text"
-                [(ngModel)]="username"
                 placeholder="Enter your username"
                 [validators]="'required | minLength:3 | maxLength:20 | unique'"
+                [value]="username"
+                (valueChange)="handleUsernameChange($event)"
+                (errorChange)="handleUsernameErrorChange($event)"
         />
     </div>
     <div>
@@ -14,9 +16,11 @@
         <app-input-field
                 id="password"
                 type="password"
+                placeholder="Enter your password"
+                [validators]="'required | minLength:3 | maxLength:20'"
                 [value]="password"
                 (valueChange)="handlePasswordChange($event)"
-                placeholder="Enter your password"
+                (errorChange)="handlePasswordErrorChange($event)"
         />
     </div>
     <div>
@@ -24,10 +28,15 @@
         <app-input-field
                 id="confirm-password"
                 type="password"
+                placeholder="Enter your password again"
+                [validators]="'required | minLength:3 | maxLength:20'"
                 [value]="confirmPassword"
                 (valueChange)="handleConfirmPasswordChange($event)"
-                placeholder="Enter your password again"
+                (errorChange)="handleConfirmPasswordErrorChange($event)"
         />
+        @if (hasPasswordMismatch) {
+            <p class="mt-1.5 text-xs text-error-500">Passwords do not match.</p>
+        }
     </div>
     <div>
         <app-label>Role</app-label>
@@ -35,11 +44,12 @@
                 [options]="options"
                 placeholder="Select user role"
                 [value]="role"
-                (valueChange)="handleRoleChange($event)"
                 className="dark:bg-dark-900"
         ></app-select>
     </div>
     <div class="flex items-center gap-5 mt-4">
-        <app-button (click)="onSubmit()" size="sm" variant="primary" [disabled]="usernameExistsError">Create User</app-button>
+        <app-button (click)="onSubmit()" size="sm" variant="primary" [disabled]="isSubmitDisabled">
+            Create User
+        </app-button>
     </div>
 </form>

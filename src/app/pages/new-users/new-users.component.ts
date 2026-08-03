@@ -4,7 +4,7 @@ import {LabelComponent} from '@/shared/components/label/label.component';
 import {SelectComponent} from "@/shared/components/select/select.component";
 import {ButtonComponent} from "@/shared/components/button/button.component";
 import {FormsModule} from "@angular/forms";
-import {HttpClient, HttpParams} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import Swal from 'sweetalert2';
 
 @Component({
@@ -14,17 +14,6 @@ import Swal from 'sweetalert2';
     styleUrl: './new-users.component.css',
 })
 export class NewUsersComponent {
-    validators = [
-        {
-            type: 'required',
-            message: 'Username is required.'
-        },
-        {
-            type: 'minLength',
-            value: 3,
-            message: 'Username must be at least 3 characters.'
-        }
-    ];
 
     private http = inject(HttpClient);
     private api = 'http://localhost:5270';
@@ -44,43 +33,50 @@ export class NewUsersComponent {
         {value: '6', label: 'User'},
     ];
 
-    usernameError = false;
-    passwordError = false;
-    confirmPasswordError = false;
-    roleError = false;
-    usernameExistsError = false;
+    usernameError = true;
+    passwordError = true;
+    confirmPasswordError = true;
 
-    // handleUsernameChange(value: string | number) {
-    //     const params = new HttpParams()
-    //         .set('username', value.toString());
-    //
-    //     this.http.get(`${this.api}/api/users/does-username-exist`, { params })
-    //         .subscribe({
-    //             next: (data: any) => {
-    //                  this.username = value.toString();
-    //                 this.usernameExistsError = data;
-    //             },
-    //             error: (err) => {
-    //                 console.error(err);
-    //             }
-    //         })
-    //
-    //     this.usernameError = this.username.trim() === '';
-    // }
+    get hasPasswordMismatch(): boolean {
+        if (!this.password || !this.confirmPassword) {
+            return false;
+        }
 
-    handlePasswordChange(value: string | number) {
+        return this.password !== this.confirmPassword;
+    }
+
+    get isSubmitDisabled(): boolean {
+        return this.usernameError
+            || this.passwordError
+            || this.confirmPasswordError
+            || this.hasPasswordMismatch
+            || !this.username.trim()
+            || !this.password.trim()
+            || !this.confirmPassword.trim();
+    }
+
+    handleUsernameChange(value: string | number): void {
+        this.username = value.toString();
+    }
+
+    handlePasswordChange(value: string | number): void {
         this.password = value.toString();
-        this.passwordError = this.password.trim() === '';
     }
 
-    handleConfirmPasswordChange(value: string | number) {
+    handleConfirmPasswordChange(value: string | number): void {
         this.confirmPassword = value.toString();
-        this.confirmPasswordError = this.confirmPassword.trim() === '';
     }
 
-    handleRoleChange(value: string | number) {
-        this.role = value.toString();
-        this.roleError = this.role.trim() === '';
+    handleUsernameErrorChange(isError: boolean): void {
+        this.usernameError = isError;
+    }
+
+    handlePasswordErrorChange(isError: boolean): void {
+        this.passwordError = isError;
+    }
+
+    handleConfirmPasswordErrorChange(isError: boolean): void {
+        this.confirmPasswordError = isError;
     }
 
     onSubmit() {
