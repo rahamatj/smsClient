@@ -151,10 +151,8 @@ export class InputFieldComponent implements OnInit, OnChanges {
 
     private checkUnique(username: string): void {
         this.lastUniqueCheckValue = username;
-        let params = new HttpParams();
-        params = params.set('username', username);
 
-        this.http.get(`${this.api}/api/users/does-username-exist`, {params})
+        this.http.get(`${this.api}/api/users/does-username-exist/${username}`)
             .subscribe({
                 next: (exists: any) => {
                     if (this.lastUniqueCheckValue !== username) {

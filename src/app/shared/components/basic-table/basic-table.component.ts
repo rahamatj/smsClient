@@ -4,12 +4,11 @@ import {ButtonComponent} from '@/shared/components/ui/button/button.component';
 import {TableDropdownComponent} from '@/shared/components/common/table-dropdown/table-dropdown.component';
 import {HttpClient} from '@angular/common/http';
 import { UserRole } from '@/shared/enums/role';
-import { HttpParams } from '@angular/common/http';
 import {RouterLink} from "@angular/router";
+import Swal from 'sweetalert2';
 
 interface AdminUser {
-    id?: number;
-    userId?: number | string;
+    id?: string;
     username: string;
     role: number;
 }
@@ -32,27 +31,61 @@ export class BasicTableComponent {
 
     search = '';
 
-    admins: AdminUser[] = [];
-    filteredAdmins: AdminUser[] = [];
+    admins : any[] = [];
+    filteredAdmins: any[] = [];
 
     currentPage = 1;
     itemsPerPage = 5;
 
-    admin : {} = {};
+    admin : any = {};
     id : string = '';
 
 
-    editAdmin(id: number | undefined) {
-        const params = new HttpParams().set('id', id?.toString() ?? '');
-
-        this.http.get(`${this.api}/api/users/edit`, { params }).subscribe({
+    editAdmin(id: string) {
+        this.http.get(`${this.api}/api/users/edit/${id}`).subscribe({
             next: (data: any) => {
                 this.admin = data;
             },
             error: err => {
                 console.error(err);
             }
-        })
+        });
+    }
+
+    deleteAdmin(id: string) {
+        Swal.fire({
+            title: 'Delete User?',
+            text: 'This action cannot be undone.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#d33'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.http.delete(`${this.api}/api/users/delete/${id}`).subscribe({
+                    next: () => {
+                        // this.admins = [...this.admins.filter(admin => admin.id !== id)];
+
+                        Swal.fire(
+                            'Deleted!',
+                            'User deleted successfully.',
+                            'success'
+                        );
+
+                        this.getAllAdmins();
+
+                    },
+                    error: () => {
+                        Swal.fire(
+                            'Error',
+                            'Failed to delete the user.',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
     }
 
     handleSearch(event: Event): void {
@@ -61,7 +94,7 @@ export class BasicTableComponent {
         this.applyFilters();
     }
 
-    ngOnInit() {
+    getAllAdmins() {
         this.http.get(`${this.api}/api/users/admins`).subscribe({
             next: (data: any) => {
                 this.admins = Array.isArray(data) ? data : [];
@@ -70,7 +103,11 @@ export class BasicTableComponent {
             error: err => {
                 console.error(err);
             }
-        })
+        });
+    }
+
+    ngOnInit() {
+        this.getAllAdmins();
     }
 
     get totalPages(): number {
@@ -78,7 +115,7 @@ export class BasicTableComponent {
         return pages || 1;
     }
 
-    get currentItems(): AdminUser[] {
+    get currentItems() {
         const start = (this.currentPage - 1) * this.itemsPerPage;
         return this.filteredAdmins.slice(start, start + this.itemsPerPage);
     }
@@ -89,14 +126,8 @@ export class BasicTableComponent {
         }
     }
 
-    handleViewMore(item: AdminUser) {
-        // logic here
-        console.log('View More:', item);
-    }
+    handleDelete(id : string) {
 
-    handleDelete(item: AdminUser) {
-        // logic here
-        console.log('Delete:', item);
     }
 
     private applyFilters(): void {
