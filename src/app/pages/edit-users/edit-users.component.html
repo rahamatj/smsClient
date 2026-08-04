@@ -1,0 +1,30 @@
+<form method="post">
+    <div>
+        <app-label>Username</app-label>
+        <app-input-field
+                id="username"
+                type="text"
+                placeholder="Enter your username"
+                [validators]="'required | minLength:3 | maxLength:20'"
+                [value]="username"
+                (valueChange)="handleUsernameChange($event)"
+                (errorChange)="handleUsernameErrorChange($event)"
+        />
+    </div>
+
+    <div>
+        <app-label>Role</app-label>
+        <app-select
+                [options]="options"
+                placeholder="Select user role"
+                [value]="role"
+                (valueChange)="handleRoleChange($event)"
+                className="dark:bg-dark-900"
+        ></app-select>
+    </div>
+    <div class="flex items-center gap-5 mt-4">
+        <app-button (click)="onSubmit()" size="sm" variant="primary" [disabled]="isSubmitDisabled">
+            Update User
+        </app-button>
+    </div>
+</form>

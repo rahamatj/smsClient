@@ -4,6 +4,8 @@ import {ButtonComponent} from '@/shared/components/ui/button/button.component';
 import {TableDropdownComponent} from '@/shared/components/common/table-dropdown/table-dropdown.component';
 import {HttpClient} from '@angular/common/http';
 import { UserRole } from '@/shared/enums/role';
+import { HttpParams } from '@angular/common/http';
+import {RouterLink} from "@angular/router";
 
 interface AdminUser {
     id?: number;
@@ -18,6 +20,7 @@ interface AdminUser {
         CommonModule,
         ButtonComponent,
         TableDropdownComponent,
+        RouterLink,
     ],
     templateUrl: './basic-table.component.html',
     styles: ``,
@@ -34,6 +37,23 @@ export class BasicTableComponent {
 
     currentPage = 1;
     itemsPerPage = 5;
+
+    admin : {} = {};
+    id : string = '';
+
+
+    editAdmin(id: number | undefined) {
+        const params = new HttpParams().set('id', id?.toString() ?? '');
+
+        this.http.get(`${this.api}/api/users/edit`, { params }).subscribe({
+            next: (data: any) => {
+                this.admin = data;
+            },
+            error: err => {
+                console.error(err);
+            }
+        })
+    }
 
     handleSearch(event: Event): void {
         const value = (event.target as HTMLInputElement).value;

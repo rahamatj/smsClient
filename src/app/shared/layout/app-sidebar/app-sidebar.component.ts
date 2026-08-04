@@ -42,8 +42,8 @@ export class AppSidebarComponent {
       path: "/users",
       subItems: [
           {
-              name: "New User",
-              path: "users/new",
+              name: "Create User",
+              path: "users/create",
           },
           {
               name: "Admin",

@@ -6,22 +6,25 @@ import {ButtonComponent} from "@/shared/components/button/button.component";
 import {FormsModule} from "@angular/forms";
 import {HttpClient} from "@angular/common/http";
 import Swal from 'sweetalert2';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
-    selector: 'app-new-users',
+    selector: 'app-edit-users',
     imports: [InputFieldComponent, LabelComponent, SelectComponent, ButtonComponent, FormsModule],
-    templateUrl: './new-users.component.html',
-    styleUrl: './new-users.component.css',
+    templateUrl: './edit-users.component.html',
+    styleUrl: './edit-users.component.css',
 })
-export class NewUsersComponent {
+export class EditUsersComponent {
 
     private http = inject(HttpClient);
     private api = 'http://localhost:5270';
+    private route: ActivatedRoute = inject(ActivatedRoute);
 
     username = '';
     password = '';
     confirmPassword = '';
     role = '6';
+    id = '';
 
     options = [
         {value: '0', label: 'Super Admin'},
@@ -47,12 +50,7 @@ export class NewUsersComponent {
 
     get isSubmitDisabled(): boolean {
         return this.usernameError
-            || this.passwordError
-            || this.confirmPasswordError
-            || this.hasPasswordMismatch
             || !this.username.trim()
-            || !this.password.trim()
-            || !this.confirmPassword.trim();
     }
 
     handleUsernameChange(value: string | number): void {
@@ -79,17 +77,21 @@ export class NewUsersComponent {
         this.confirmPasswordError = isError;
     }
 
+    handleRoleChange(value: string | number): void {
+        this.role = value.toString();
+    }
+
     onSubmit() {
-        this.http.post(`${this.api}/api/users/create`, {
+        this.http.put(`${this.api}/api/users/update`, {
+            id: this.id,
             username: this.username,
-            password: this.password,
             role: Number(this.role),
         }).subscribe({
             next: () => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Success',
-                    text: 'User created successfully!',
+                    text: 'User updated successfully!',
                 });
             },
             error: () => {
@@ -98,6 +100,23 @@ export class NewUsersComponent {
                     title: 'Error',
                     text: 'Something went wrong!',
                 });
+            }
+        })
+    }
+
+    ngOnInit(): void {
+        this.id = this.route.snapshot.paramMap.get('id') ?? '';
+
+        console.log(this.id);
+
+        this.http.get(`${this.api}/api/users/edit/${this.id}`).subscribe({
+            next: (data: any) => {
+                console.log("user data 2:", data);
+                this.username = data?.username?.toString() ?? '';
+                this.role = data?.role?.toString() ?? '6';
+            },
+            error: err => {
+                console.error(err);
             }
         })
     }

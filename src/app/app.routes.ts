@@ -22,6 +22,8 @@ import { UnauthorizedComponent } from './pages/other-page/unauthorized/unauthori
 import { AdminComponent } from '@/pages/admin/admin.component';
 import { DashboardLayoutComponent } from '@/shared/layout/dashboard-layout/dashboard-layout.component';
 import {NewUsersComponent} from "@/pages/new-users/new-users.component";
+import {EditUsersComponent} from "@/pages/edit-users/edit-users.component";
+import {EditPasswordComponent} from "@/pages/edit-password/edit-password.component";
 
 export const routes: Routes = [
   {
@@ -43,8 +45,20 @@ export const routes: Routes = [
                 'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
             children:[
                 {
-                    path: 'new',
+                    path: 'create',
                     component: NewUsersComponent,
+                    title:
+                        'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
+                },
+                {
+                    path: 'edit/:id',
+                    component: EditUsersComponent,
+                    title:
+                        'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
+                },
+                {
+                    path: 'edit-password/:id',
+                    component: EditPasswordComponent,
                     title:
                         'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
                 },

@@ -6,22 +6,25 @@ import {ButtonComponent} from "@/shared/components/button/button.component";
 import {FormsModule} from "@angular/forms";
 import {HttpClient} from "@angular/common/http";
 import Swal from 'sweetalert2';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
-    selector: 'app-new-users',
+    selector: 'app-edit-password',
     imports: [InputFieldComponent, LabelComponent, SelectComponent, ButtonComponent, FormsModule],
-    templateUrl: './new-users.component.html',
-    styleUrl: './new-users.component.css',
+    templateUrl: './edit-password.component.html',
+    styleUrl: './edit-password.component.css',
 })
-export class NewUsersComponent {
+export class EditPasswordComponent {
 
     private http = inject(HttpClient);
     private api = 'http://localhost:5270';
+    private route: ActivatedRoute = inject(ActivatedRoute);
 
     username = '';
     password = '';
     confirmPassword = '';
     role = '6';
+    id = '';
 
     options = [
         {value: '0', label: 'Super Admin'},
@@ -33,26 +36,11 @@ export class NewUsersComponent {
         {value: '6', label: 'User'},
     ];
 
-    usernameError = true;
     passwordError = true;
     confirmPasswordError = true;
 
-    get hasPasswordMismatch(): boolean {
-        if (!this.password || !this.confirmPassword) {
-            return false;
-        }
-
-        return this.password !== this.confirmPassword;
-    }
-
     get isSubmitDisabled(): boolean {
-        return this.usernameError
-            || this.passwordError
-            || this.confirmPasswordError
-            || this.hasPasswordMismatch
-            || !this.username.trim()
-            || !this.password.trim()
-            || !this.confirmPassword.trim();
+        return this.passwordError || this.confirmPasswordError;
     }
 
     handleUsernameChange(value: string | number): void {
@@ -67,10 +55,6 @@ export class NewUsersComponent {
         this.confirmPassword = value.toString();
     }
 
-    handleUsernameErrorChange(isError: boolean): void {
-        this.usernameError = isError;
-    }
-
     handlePasswordErrorChange(isError: boolean): void {
         this.passwordError = isError;
     }
@@ -80,16 +64,15 @@ export class NewUsersComponent {
     }
 
     onSubmit() {
-        this.http.post(`${this.api}/api/users/create`, {
-            username: this.username,
+        this.http.patch(`${this.api}/api/users/update-password`, {
+            id: this.id,
             password: this.password,
-            role: Number(this.role),
         }).subscribe({
             next: () => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Success',
-                    text: 'User created successfully!',
+                    text: 'User updated successfully!',
                 });
             },
             error: () => {

@@ -1,5 +1,5 @@
 import {CommonModule} from '@angular/common';
-import {Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
             <input
                     [type]="type"
                     [id]="id"
+                    [value]="value"
                     [placeholder]="placeholder"
                     [min]="min"
                     [max]="max"
@@ -34,7 +35,7 @@ import { FormsModule } from '@angular/forms';
         </div>
     `,
 })
-export class InputFieldComponent implements OnInit {
+export class InputFieldComponent implements OnInit, OnChanges {
     @Input() type: string = 'text';
     @Input() id?: string = '';
     @Input() name?: string = '';
@@ -75,6 +76,12 @@ export class InputFieldComponent implements OnInit {
 
     ngOnInit(): void {
         this.validateValue(this.value);
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['value'] || changes['validators']) {
+            this.validateValue(this.value);
+        }
     }
 
     onInput(event: Event) {
@@ -118,6 +125,15 @@ export class InputFieldComponent implements OnInit {
                     hasError = true;
 
                     this.hints = [...this.hints, `Maximum length is ${maxLength} characters.`];
+                }
+            } else if (rule === 'no-space' && /\s/.test(valueText)) {
+                hasError = true;
+                this.hints = [...this.hints, 'Spaces are not allowed.'];
+            } else if (rule === 'confirm-password' && valueText.length > 0) {
+                const passwordInput = document.querySelector<HTMLInputElement>('input[type="password"]');
+                if (passwordInput && passwordInput.value !== valueText) {
+                    hasError = true;
+                    this.hints = [...this.hints, 'Passwords do not match.'];
                 }
             }
 
