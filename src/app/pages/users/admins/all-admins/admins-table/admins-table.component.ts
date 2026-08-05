@@ -14,17 +14,17 @@ interface AdminUser {
 }
 
 @Component({
-    selector: 'app-basic-table',
+    selector: 'app-admins-table',
     imports: [
         CommonModule,
         ButtonComponent,
         TableDropdownComponent,
         RouterLink,
     ],
-    templateUrl: './basic-table.component.html',
+    templateUrl: './admins-table.component.html',
     styles: ``,
 })
-export class BasicTableComponent {
+export class AdminsTableComponent {
 
     http : HttpClient = inject(HttpClient);
     api : string = 'http://localhost:5270';
@@ -42,9 +42,9 @@ export class BasicTableComponent {
 
 
     editAdmin(id: string) {
-        this.http.get(`${this.api}/api/users/edit/${id}`).subscribe({
+        this.http.get(`${this.api}/api/admins/edit/${id}`).subscribe({
             next: (data: any) => {
-                this.admin = data;
+                this.admins = data;
             },
             error: err => {
                 console.error(err);
@@ -63,9 +63,9 @@ export class BasicTableComponent {
             confirmButtonColor: '#d33'
         }).then((result) => {
             if (result.isConfirmed) {
-                this.http.delete(`${this.api}/api/users/delete/${id}`).subscribe({
+                this.http.delete(`${this.api}/api/admins/delete/${id}`).subscribe({
                     next: () => {
-                        // this.admins = [...this.admins.filter(admin => admin.id !== id)];
+                        // this.admins = [...this.admins.filter(admins => admins.id !== id)];
 
                         Swal.fire(
                             'Deleted!',
@@ -95,7 +95,7 @@ export class BasicTableComponent {
     }
 
     getAllAdmins() {
-        this.http.get(`${this.api}/api/users/admins`).subscribe({
+        this.http.get(`${this.api}/api/admins`).subscribe({
             next: (data: any) => {
                 this.admins = Array.isArray(data) ? data : [];
                 this.applyFilters();

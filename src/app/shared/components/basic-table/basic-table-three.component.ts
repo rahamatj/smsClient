@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { ButtonComponent } from '../../../ui/button/button.component';
-import { TableDropdownComponent } from '../../../common/table-dropdown/table-dropdown.component';
-import { BadgeComponent } from '../../../ui/badge/badge.component';
+import { ButtonComponent } from '../ui/button/button.component';
+import { TableDropdownComponent } from '../common/table-dropdown/table-dropdown.component';
+import { BadgeComponent } from '../ui/badge/badge.component';
 
 interface Transaction {
   image: string;

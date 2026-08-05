@@ -19,11 +19,12 @@ import { SignInComponent } from './pages/auth-pages/sign-in/sign-in.component';
 import { CalenderComponent } from './pages/calender/calender.component';
 import { AuthGuard } from './guards/auth.guard';
 import { UnauthorizedComponent } from './pages/other-page/unauthorized/unauthorized.component';
-import { AdminComponent } from '@/pages/admin/admin.component';
+import { AllStudentsComponent } from '@/pages/users/students/all-students/all-students.component';
 import { DashboardLayoutComponent } from '@/shared/layout/dashboard-layout/dashboard-layout.component';
 import {NewUsersComponent} from "@/pages/new-users/new-users.component";
 import {EditUsersComponent} from "@/pages/edit-users/edit-users.component";
 import {EditPasswordComponent} from "@/pages/edit-password/edit-password.component";
+import {AllAdminsComponent} from "@/pages/users/admins/all-admins/all-admins.component";
 
 export const routes: Routes = [
   {
@@ -63,8 +64,14 @@ export const routes: Routes = [
                         'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
                 },
                 {
-                    path: 'admin',
-                    component: AdminComponent,
+                    path: 'admins',
+                    component: AllAdminsComponent,
+                    title:
+                        'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
+                },
+                {
+                    path: 'students',
+                    component: AllStudentsComponent,
                     title:
                         'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
                 }

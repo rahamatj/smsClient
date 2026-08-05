@@ -1,7 +1,6 @@
 import {Component, inject} from '@angular/core';
 import {InputFieldComponent} from '@/shared/components/input/input-field.component';
 import {LabelComponent} from '@/shared/components/label/label.component';
-import {SelectComponent} from "@/shared/components/select/select.component";
 import {ButtonComponent} from "@/shared/components/button/button.component";
 import {FormsModule} from "@angular/forms";
 import {HttpClient} from "@angular/common/http";
@@ -10,7 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-edit-password',
-    imports: [InputFieldComponent, LabelComponent, SelectComponent, ButtonComponent, FormsModule],
+    imports: [InputFieldComponent, LabelComponent, ButtonComponent, FormsModule],
     templateUrl: './edit-password.component.html',
     styleUrl: './edit-password.component.css',
 })

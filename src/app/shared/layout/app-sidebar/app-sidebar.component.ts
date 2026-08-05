@@ -46,12 +46,12 @@ export class AppSidebarComponent {
               path: "users/create",
           },
           {
-              name: "Admin",
-              path: "users/admin",
+              name: "Admins",
+              path: "users/admins",
           },
           {
-              name: "Student",
-              path: "student",
+              name: "Students",
+              path: "users/students",
           },
           {
               name: "Admission",
