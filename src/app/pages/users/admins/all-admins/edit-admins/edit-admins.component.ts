@@ -11,10 +11,10 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
     selector: 'app-edit-users',
     imports: [InputFieldComponent, LabelComponent, SelectComponent, ButtonComponent, FormsModule],
-    templateUrl: './edit-users.component.html',
-    styleUrl: './edit-users.component.css',
+    templateUrl: './edit-admins.component.html',
+    styleUrl: './edit-admins.component.css',
 })
-export class EditUsersComponent {
+export class EditAdminsComponent {
 
     private http = inject(HttpClient);
     private api = 'http://localhost:5270';
@@ -23,7 +23,7 @@ export class EditUsersComponent {
     username = '';
     password = '';
     confirmPassword = '';
-    role = '6';
+    role = '7';
     id = '';
 
     options = [
@@ -37,8 +37,6 @@ export class EditUsersComponent {
     ];
 
     usernameError = true;
-    passwordError = true;
-    confirmPasswordError = true;
 
     get hasPasswordMismatch(): boolean {
         if (!this.password || !this.confirmPassword) {
@@ -57,24 +55,8 @@ export class EditUsersComponent {
         this.username = value.toString();
     }
 
-    handlePasswordChange(value: string | number): void {
-        this.password = value.toString();
-    }
-
-    handleConfirmPasswordChange(value: string | number): void {
-        this.confirmPassword = value.toString();
-    }
-
     handleUsernameErrorChange(isError: boolean): void {
         this.usernameError = isError;
-    }
-
-    handlePasswordErrorChange(isError: boolean): void {
-        this.passwordError = isError;
-    }
-
-    handleConfirmPasswordErrorChange(isError: boolean): void {
-        this.confirmPasswordError = isError;
     }
 
     handleRoleChange(value: string | number): void {
@@ -106,24 +88,15 @@ export class EditUsersComponent {
 
     ngOnInit(): void {
         this.id = this.route.snapshot.paramMap.get('id') ?? '';
-        this.http.get(`${this.api}/api/users/edit/${this.id}`).subscribe({
-            next: (data: any) => {
-                const user = Array.isArray(data) ? data[0] : (data?.user ?? data);
 
-                this.username = this.toFieldValue(user?.username ?? user?.userName);
-                this.role = this.toFieldValue(user?.role, '6');
+        this.http.get(`${this.api}/api/admins/edit/${this.id}`).subscribe({
+            next: (data: any) => {
+                this.username = data?.username?.toString() ?? '';
+                this.role = data?.role?.toString() ?? '7';
             },
             error: err => {
                 console.error(err);
             }
         })
-    }
-
-    private toFieldValue(value: unknown, fallback = ''): string {
-        if (value === null || value === undefined) {
-            return fallback;
-        }
-
-        return value.toString();
     }
 }

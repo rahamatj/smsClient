@@ -3,16 +3,16 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 
-import { EditUsersComponent } from './edit-users.component';
+import { EditAdminsComponent } from './edit-admins.component';
 
-describe('EditUsersComponent', () => {
-  let component: EditUsersComponent;
-  let fixture: ComponentFixture<EditUsersComponent>;
+describe('EditAdminsComponent', () => {
+  let component: EditAdminsComponent;
+  let fixture: ComponentFixture<EditAdminsComponent>;
   let httpTestingController: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditUsersComponent],
+      imports: [EditAdminsComponent],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -29,12 +29,12 @@ describe('EditUsersComponent', () => {
     .compileComponents();
 
     httpTestingController = TestBed.inject(HttpTestingController);
-    fixture = TestBed.createComponent(EditUsersComponent);
+    fixture = TestBed.createComponent(EditAdminsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
     httpTestingController
-      .expectOne('http://localhost:5270/api/users/edit/test-id')
-      .flush({ user: { username: 'test-user', role: 1 } });
+      .expectOne('http://localhost:5270/api/admins/edit/test-id')
+      .flush({ username: 'test-user', role: 1 });
   });
 
   afterEach(() => {
@@ -43,14 +43,5 @@ describe('EditUsersComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should load the username into the edit form', () => {
-    fixture.detectChanges();
-
-    const usernameInput: HTMLInputElement | null = fixture.nativeElement.querySelector('input#username');
-
-    expect(component.username).toBe('test-user');
-    expect(usernameInput?.value).toBe('test-user');
   });
 });

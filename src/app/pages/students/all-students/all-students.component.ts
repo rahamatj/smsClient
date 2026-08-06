@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { ComponentCardComponent } from '@/shared/components/component-card/component-card.component';
-import { AdminsTableComponent } from "@/pages/admins/all-admins/admins-table/admins-table.component";
+import { StudentsTableComponent } from "@/pages/users/students/all-students/students-table/students-table.component";
 
 @Component({
     selector: 'app-all-students',
-    imports: [ComponentCardComponent, AdminsTableComponent],
+    imports: [ComponentCardComponent, StudentsTableComponent],
     templateUrl: './all-students.component.html',
     styleUrl: './all-students.component.css',
 })

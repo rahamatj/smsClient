@@ -58,8 +58,8 @@ export class AppSidebarComponent {
               path: "admission",
           },
           {
-              name: "Teacher",
-              path: "teacher",
+              name: "Teachers",
+              path: "users/teachers",
           },
           {
               name: "Teacher Permission",
