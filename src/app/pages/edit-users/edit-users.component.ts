@@ -106,7 +106,7 @@ export class EditUsersComponent {
 
     ngOnInit(): void {
         this.id = this.route.snapshot.paramMap.get('id') ?? '';
-        this.http.get(`${this.api}/api/users/edit/${this.id}`).subscribe({
+        this.http.get(`${this.api}/api/admins/edit/${this.id}`).subscribe({
             next: (data: any) => {
                 const user = Array.isArray(data) ? data[0] : (data?.user ?? data);
 

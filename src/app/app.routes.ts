@@ -36,18 +36,12 @@ export const routes: Routes = [
         children: [
             {
                 path: '',
-                component: EcommerceComponent,
-                title:
-                    'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
-            },
-            {
-                path: 'users',
                 component: DashboardLayoutComponent,
                 title:
                     'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
                 children: [
                     {
-                        path: 'create',
+                        path: 'users/create',
                         component: NewUsersComponent,
                         title:
                             'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
@@ -65,13 +59,13 @@ export const routes: Routes = [
                             'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
                     },
                     {
-                        path: 'admins',
+                        path: 'users/admins',
                         component: AllAdminsComponent,
                         title:
                             'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
                     },
                     {
-                        path: 'students',
+                        path: 'users/students',
                         component: AllStudentsComponent,
                         title:
                             'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',

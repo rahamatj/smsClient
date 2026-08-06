@@ -44,7 +44,7 @@ export class AdminsTableComponent {
     editAdmin(id: string) {
         this.http.get(`${this.api}/api/admins/edit/${id}`).subscribe({
             next: (data: any) => {
-                this.admins = data;
+                this.admin = data;
             },
             error: err => {
                 console.error(err);

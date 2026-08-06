@@ -34,7 +34,7 @@ describe('EditAdminsComponent', () => {
     fixture.detectChanges();
     httpTestingController
       .expectOne('http://localhost:5270/api/admins/edit/test-id')
-      .flush({ username: 'test-user', role: 1 });
+      .flush({ admin: { username: 'test-user', role: 1 } });
   });
 
   afterEach(() => {
@@ -43,5 +43,15 @@ describe('EditAdminsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should load the username into the edit admin form', () => {
+    fixture.detectChanges();
+
+    const usernameInput: HTMLInputElement | null = fixture.nativeElement.querySelector('input#username');
+
+    expect(component.username).toBe('test-user');
+    expect(component.role).toBe('1');
+    expect(usernameInput?.value).toBe('test-user');
   });
 });

@@ -8,6 +8,11 @@ import {HttpClient} from "@angular/common/http";
 import Swal from 'sweetalert2';
 import { ActivatedRoute } from '@angular/router';
 
+interface Admin {
+    username: string;
+    role: string;
+}
+
 @Component({
     selector: 'app-edit-users',
     imports: [InputFieldComponent, LabelComponent, SelectComponent, ButtonComponent, FormsModule],
@@ -20,10 +25,11 @@ export class EditAdminsComponent {
     private api = 'http://localhost:5270';
     private route: ActivatedRoute = inject(ActivatedRoute);
 
+    admin: Admin = { username: '', role: '' };
     username = '';
     password = '';
     confirmPassword = '';
-    role = '7';
+    role = '1';
     id = '';
 
     options = [
@@ -64,7 +70,7 @@ export class EditAdminsComponent {
     }
 
     onSubmit() {
-        this.http.put(`${this.api}/api/users/update`, {
+        this.http.put(`${this.api}/api/users/admins/update`, {
             id: this.id,
             username: this.username,
             role: Number(this.role),
@@ -91,12 +97,24 @@ export class EditAdminsComponent {
 
         this.http.get(`${this.api}/api/admins/edit/${this.id}`).subscribe({
             next: (data: any) => {
-                this.username = data?.username?.toString() ?? '';
-                this.role = data?.role?.toString() ?? '7';
+                const admin: Admin = {
+                    username: data.username,
+                    role: data.role,
+                };
+
+                console.log("Admin", admin);
             },
             error: err => {
                 console.error(err);
             }
         })
+    }
+
+    private toFieldValue(value: unknown, fallback = ''): string {
+        if (value === null || value === undefined) {
+            return fallback;
+        }
+
+        return value.toString();
     }
 }
