@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: ' http://localhost:5270',
+  apiUrl: 'http://srv1887348.hstgr.cloud/',
 };

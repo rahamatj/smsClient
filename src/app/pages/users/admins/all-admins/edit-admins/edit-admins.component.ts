@@ -7,6 +7,7 @@ import {FormsModule} from "@angular/forms";
 import {HttpClient} from "@angular/common/http";
 import Swal from 'sweetalert2';
 import { ActivatedRoute } from '@angular/router';
+import { environment } from "@/environments/environment";
 
 interface Admin {
     username: string;
@@ -14,7 +15,7 @@ interface Admin {
 }
 
 @Component({
-    selector: 'app-edit-users',
+    selector: 'app-edit-admins',
     imports: [InputFieldComponent, LabelComponent, SelectComponent, ButtonComponent, FormsModule],
     templateUrl: './edit-admins.component.html',
     styleUrl: './edit-admins.component.css',
@@ -22,7 +23,7 @@ interface Admin {
 export class EditAdminsComponent {
 
     private http = inject(HttpClient);
-    private api = 'http://localhost:5270';
+    private api = environment.apiUrl;
     private route: ActivatedRoute = inject(ActivatedRoute);
 
     admin: Admin = { username: '', role: '' };

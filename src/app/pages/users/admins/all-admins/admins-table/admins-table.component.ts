@@ -6,6 +6,7 @@ import {HttpClient} from '@angular/common/http';
 import { UserRole } from '@/shared/enums/role';
 import {RouterLink} from "@angular/router";
 import Swal from 'sweetalert2';
+import { environment } from "@/environments/environment";
 
 interface AdminUser {
     id?: string;
@@ -27,7 +28,7 @@ interface AdminUser {
 export class AdminsTableComponent {
 
     http : HttpClient = inject(HttpClient);
-    api : string = 'http://localhost:5270';
+    api : string = environment.apiUrl;
 
     search = '';
 

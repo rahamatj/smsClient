@@ -7,6 +7,7 @@ import {FormsModule} from "@angular/forms";
 import {HttpClient} from "@angular/common/http";
 import Swal from 'sweetalert2';
 import { ActivatedRoute } from '@angular/router';
+import { environment } from "@/environments/environment";
 
 @Component({
     selector: 'app-edit-users',
@@ -17,7 +18,7 @@ import { ActivatedRoute } from '@angular/router';
 export class EditUsersComponent {
 
     private http = inject(HttpClient);
-    private api = 'http://localhost:5270';
+    private api = environment.apiUrl;
     private route: ActivatedRoute = inject(ActivatedRoute);
 
     username = '';
