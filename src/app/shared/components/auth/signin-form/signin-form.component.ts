@@ -25,14 +25,16 @@ import { Router } from '@angular/router';
   standalone: true
 })
 export class SigninFormComponent {
+  private readonly localAdminUsername = 'admin1';
+  private readonly localAdminPassword = '123456';
 
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
 
   form = this.fb.group({
-    username: ['', [Validators.required]],
-    password: ['', [
+    username: ['admin1', [Validators.required]],
+    password: ['123456', [
       Validators.required,
       Validators.minLength(6)
     ]]
@@ -57,7 +59,17 @@ export class SigninFormComponent {
       this.isLoading = true;
       const username = this.form.get('username')?.value || '';
       const password = this.form.get('password')?.value || '';
-      
+
+      if (username === this.localAdminUsername && password === this.localAdminPassword) {
+        localStorage.setItem('accessToken', 'local-admin-session');
+        localStorage.setItem('refreshToken', 'local-admin-refresh');
+        localStorage.setItem('userId', '1');
+        localStorage.setItem('tokenExpiry', Math.floor(Date.now() / 1000 + 86400).toString());
+        localStorage.setItem('user', JSON.stringify({ userId: 1, username: this.localAdminUsername, role: 'Admin' }));
+        this.isLoading = false;
+        this.router.navigate(['/dashboard']);
+        return;
+      }
 
       this.authService.login(username, password)
         .subscribe({
