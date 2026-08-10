@@ -1,0 +1,42 @@
+
+  name: Deploy Angular App to VPS
+
+  on:
+    push:
+      branches:
+        - main
+
+  jobs:
+    deploy:
+      runs-on: ubuntu-latest
+
+      steps:
+        # 1. Checkout repository
+        - name: Checkout
+          uses: actions/checkout@v4
+
+        # 2. Setup Node.js
+        - name: Setup Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: 22
+            cache: npm
+
+        # 3. Install dependencies
+        - name: Install dependencies
+          run: npm ci
+
+        # 4. Build Angular application
+        - name: Build Angular
+          run: npm run build -- --configuration production
+
+        # 5. Deploy Angular files to VPS
+        - name: Deploy to VPS
+          uses: appleboy/scp-action@v0.1.7
+          with:
+            host: ${{ secrets.VPS_HOST }}
+            username: ${{ secrets.VPS_USER }}
+            key: ${{ secrets.VPS_SSH_KEY }}
+            source: "dist/*"
+            target: "/var/www/sms/sms-client"
+            strip_components: 1

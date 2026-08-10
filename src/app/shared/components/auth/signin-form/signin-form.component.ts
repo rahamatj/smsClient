@@ -58,16 +58,10 @@ export class SigninFormComponent {
       const username = this.form.get('username')?.value || '';
       const password = this.form.get('password')?.value || '';
       
-      console.log('Username:', username);
-      console.log('Password:', password);
-      console.log('Keep logged in:', this.isChecked);
 
       this.authService.login(username, password)
         .subscribe({
           next: (response) => {
-            console.log('Login successful, response:', response);
-            console.log('Stored user data:', localStorage.getItem('user'));
-            console.log('Stored access token:', localStorage.getItem('accessToken'));
             this.isLoading = false;
             this.router.navigate(['/dashboard']);
           },
@@ -79,7 +73,6 @@ export class SigninFormComponent {
         });
 
     } else {
-      console.log('Form is invalid');
       this.errorMessage = 'Please fill in all required fields correctly.';
     }
   }

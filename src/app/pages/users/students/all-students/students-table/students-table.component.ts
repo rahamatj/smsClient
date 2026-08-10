@@ -98,7 +98,6 @@ export class StudentsTableComponent {
     getAllStudents() {
         this.http.get(`${this.api}/api/students`).subscribe({
             next: (data: any) => {
-                console.log("Data from students api", data);
 
                 this.students = Array.isArray(data) ? data : [];
                 this.applyFilters();

@@ -80,7 +80,6 @@ function handle401Error(
 
     return authService.refreshToken().pipe(
       switchMap((response: any) => {
-        console.log('[AuthInterceptor] Token refreshed successfully', response);
         isRefreshing = false;
 
         const newAccessToken = response.accessToken;
@@ -112,7 +111,6 @@ function handle401Error(
     );
   } else {
     // Token refresh is already in progress, queue this request
-    console.log('[AuthInterceptor] Token refresh in progress, queueing request');
 
     return refreshTokenSubject.pipe(
       // Wait for token to be available (not null)
@@ -121,7 +119,6 @@ function handle401Error(
       take(1),
       // Retry request with new token
       switchMap((token) => {
-        console.log('[AuthInterceptor] Retrying request with refreshed token');
         return next(addToken(request, token!));
       }),
       // If queued request fails after retry, log out

@@ -103,7 +103,6 @@ export class EditAdminsComponent {
                     role: data.role,
                 };
 
-                console.log("Admin", admin);
             },
             error: err => {
                 console.error(err);

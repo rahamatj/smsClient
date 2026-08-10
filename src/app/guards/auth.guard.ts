@@ -23,9 +23,6 @@ export class AuthGuard implements CanActivate {
     const requiredRoles = route.data['roles'] as Array<string>;
     if (requiredRoles && requiredRoles.length > 0) {
       const userRole = this.getUserRole();
-      console.log('Route requires roles:', requiredRoles);
-      console.log('User role:', userRole);
-      console.log('User data:', localStorage.getItem('user'));
       
       if (!userRole) {
         console.error('No user role found');
@@ -54,7 +51,6 @@ export class AuthGuard implements CanActivate {
       if (userStr) {
         const user = JSON.parse(userStr);
         const role = user.role || user.Role || null;
-        console.log('Extracted user role from localStorage:', role);
         return role;
       } else {
         console.warn('No user data found in localStorage, trying to extract from JWT token');
@@ -69,7 +65,6 @@ export class AuthGuard implements CanActivate {
       try {
         const payload = JSON.parse(atob(accessToken.split('.')[1]));
         const role = payload.role || payload.Role || null;
-        console.log('Extracted role from JWT token:', role);
         return role;
       } catch (error) {
         console.error('Error extracting role from JWT token:', error);

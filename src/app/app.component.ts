@@ -17,9 +17,10 @@ export class AppComponent {
   authService = inject(AuthService);
 
   ngOnInit(): void {
+    console.log('App running!');
+
     this.authService.refreshToken().subscribe({
       next: (res) => {
-        console.log('[AppComponent] Token refreshed successfully', res);
       },
       error: (err) => {
         console.error('[AppComponent] Token refresh failed', err);

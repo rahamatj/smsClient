@@ -24,7 +24,6 @@ export class AuthService {
       })
       .pipe(
         tap((res) => {
-          console.log("Login response:", res); // Log the entire response for debugging
 
           if (res.accessToken && res.refreshToken) {
             localStorage.setItem("accessToken", res.accessToken);
@@ -41,16 +40,11 @@ export class AuthService {
 
             // Store user data with role
             if (res.user) {
-              console.log('[AuthService] Storing user:', res.user);
               localStorage.setItem("user", JSON.stringify(res.user));
             } else {
               console.warn('[AuthService] No user data in login response');
             }
 
-            console.log('[AuthService] Login successful. Stored data:');
-            console.log('  - accessToken:', localStorage.getItem('accessToken')?.substring(0, 20) + '...');
-            console.log('  - refreshToken:', localStorage.getItem('refreshToken'));
-            console.log('  - user:', localStorage.getItem('user'));
 
             this.isAuthenticatedSubject.next(true);
           } else {
@@ -82,10 +76,8 @@ export class AuthService {
       })
       .pipe(
         tap((res) => {
-          console.log('[AuthService] Refresh response:', res);
           
           if (res.accessToken) {
-            console.log('[AuthService] Token refreshed successfully');
             localStorage.setItem("accessToken", res.accessToken);
 
             // Update refresh token if provided
@@ -191,7 +183,6 @@ export class AuthService {
 
 //   onRefresh() {
 //     this.authService.refreshToken().subscribe(
-//       (response) => console.log("Token refreshed:", response),
 //       (error) => console.error("Refresh failed:", error),
 //     );
 //   }
