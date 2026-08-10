@@ -1,42 +1,62 @@
 
-  name: Deploy Angular App to VPS
+name: Deploy Angular App to VPS
 
-  on:
-    push:
-      branches:
-        - main
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
-  jobs:
-    deploy:
-      runs-on: ubuntu-latest
+concurrency:
+  group: deploy-sms-client
+  cancel-in-progress: true
 
-      steps:
-        # 1. Checkout repository
-        - name: Checkout
-          uses: actions/checkout@v4
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
-        # 2. Setup Node.js
-        - name: Setup Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: 22
-            cache: npm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-        # 3. Install dependencies
-        - name: Install dependencies
-          run: npm ci
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
 
-        # 4. Build Angular application
-        - name: Build Angular
-          run: npm run build -- --configuration production
+      - name: Install dependencies
+        run: npm ci
 
-        # 5. Deploy Angular files to VPS
-        - name: Deploy to VPS
-          uses: appleboy/scp-action@v0.1.7
-          with:
-            host: ${{ secrets.VPS_HOST }}
-            username: ${{ secrets.VPS_USER }}
-            key: ${{ secrets.VPS_SSH_KEY }}
-            source: "dist/*"
-            target: "/var/www/sms/sms-client"
-            strip_components: 1
+      - name: Build Angular
+        run: npm run build -- --configuration production
+
+      - name: Package build output
+        run: |
+          cd dist/ng-tailadmin/browser
+          tar -czf ../../../sms-client.tar.gz .
+
+      - name: Upload artifact to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "sms-client.tar.gz"
+          target: "/tmp"
+
+      - name: Deploy on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            mkdir -p /var/www/sms-client
+            rm -rf /var/www/sms-client/*
+            tar -xzf /tmp/sms-client.tar.gz -C /var/www/sms-client
+            chown -R www-data:www-data /var/www/sms-client
+            rm -f /tmp/sms-client.tar.gz
+            nginx -t
+            systemctl reload nginx
