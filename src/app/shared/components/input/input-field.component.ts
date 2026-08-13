@@ -2,6 +2,7 @@ import {CommonModule} from '@angular/common';
 import {Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { environment } from '@/environments/environment';
 
 @Component({
     selector: 'app-input-field',
@@ -49,7 +50,7 @@ export class InputFieldComponent implements OnInit, OnChanges {
     @Output() valueChange = new EventEmitter<string | number>();
     @Output() errorChange = new EventEmitter<boolean>();
 
-    api: string = 'http://localhost:5270';
+    api: string = environment.apiUrl;
     http: HttpClient = inject(HttpClient);
 
     error = true;
@@ -152,7 +153,7 @@ export class InputFieldComponent implements OnInit, OnChanges {
     private checkUnique(username: string): void {
         this.lastUniqueCheckValue = username;
 
-        this.http.get(`${this.api}/api/users/does-username-exist/${username}`)
+        this.http.get(`${this.api}/api/admins/does-username-exist/${username}`)
             .subscribe({
                 next: (exists: any) => {
                     if (this.lastUniqueCheckValue !== username) {

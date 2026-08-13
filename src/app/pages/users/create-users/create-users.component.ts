@@ -9,12 +9,12 @@ import Swal from 'sweetalert2';
 import { environment } from "@/environments/environment";
 
 @Component({
-    selector: 'app-new-users',
+    selector: 'app-create-users',
     imports: [InputFieldComponent, LabelComponent, SelectComponent, ButtonComponent, FormsModule],
-    templateUrl: './new-users.component.html',
-    styleUrls: ['./new-users.component.css'],
+    templateUrl: './create-users.component.html',
+    styleUrls: ['./create-users.component.css'],
 })
-export class NewUsersComponent {
+export class CreateUsersComponent {
 
     private http = inject(HttpClient);
     private api = environment.apiUrl;

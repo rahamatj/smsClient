@@ -20,7 +20,7 @@ import {AuthGuard} from './guards/auth.guard';
 import {UnauthorizedComponent} from './pages/other-page/unauthorized/unauthorized.component';
 import {AllStudentsComponent} from '@/pages/users/students/all-students/all-students.component';
 import {DashboardLayoutComponent} from '@/shared/layout/dashboard-layout/dashboard-layout.component';
-import {NewUsersComponent} from "@/pages/new-users/new-users.component";
+import {CreateUsersComponent} from "@/pages/users/create-users/create-users.component";
 import {EditUsersComponent} from "@/pages/edit-users/edit-users.component";
 import {EditPasswordComponent} from "@/pages/edit-password/edit-password.component";
 import {AllAdminsComponent} from "@/pages/users/admins/all-admins/all-admins.component";
@@ -41,7 +41,7 @@ export const routes: Routes = [
                 children: [
                     {
                         path: 'users/create',
-                        component: NewUsersComponent,
+                        component: CreateUsersComponent,
                         title:
                             'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
                     },
