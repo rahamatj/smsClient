@@ -1,8 +1,8 @@
 import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { environment } from "@/environments/environment";
 import { Observable, tap, BehaviorSubject, catchError, throwError } from "rxjs";
 import { Router } from "@angular/router";
+import { environment } from "@/environments/environment";
 
 @Injectable({
   providedIn: "root",
@@ -17,6 +17,9 @@ export class AuthService {
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
   login(username: string, password: string): Observable<any> {
+
+    console.log(`[AuthService] Attempting login for user: ${username}`);
+
     return this.http
       .post<any>(`${environment.apiUrl}/api/auth/login`, {
         username,
@@ -24,6 +27,8 @@ export class AuthService {
       })
       .pipe(
         tap((res) => {
+
+          console.log(`[AuthService] Login response for user ${username}:`, res);
 
           if (res.accessToken && res.refreshToken) {
             localStorage.setItem("accessToken", res.accessToken);
@@ -44,7 +49,6 @@ export class AuthService {
             } else {
               console.warn('[AuthService] No user data in login response');
             }
-
 
             this.isAuthenticatedSubject.next(true);
           } else {
@@ -70,7 +74,7 @@ export class AuthService {
     }
 
     return this.http
-      .post<any>(`${environment.apiUrl}/api/auth/refreshtoken`, {
+      .post<any>(`${environment.apiUrl}api/auth/refreshtoken`, {
         userId: userId,
         refreshToken: refreshToken,
       })

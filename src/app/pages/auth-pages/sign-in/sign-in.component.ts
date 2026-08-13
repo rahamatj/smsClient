@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { AuthPageLayoutComponent } from '../../../shared/layout/auth-page-layout/auth-page-layout.component';
-import { SigninFormComponent } from '../../../shared/components/auth/signin-form/signin-form.component';
+import { AuthPageLayoutComponent } from '@/shared/layout/auth-page-layout/auth-page-layout.component';
+import { SigninFormComponent } from '@/shared/components/auth/signin-form/signin-form.component';
 
 
 @Component({
@@ -12,5 +12,11 @@ import { SigninFormComponent } from '../../../shared/components/auth/signin-form
   templateUrl: './sign-in.component.html',
 })
 export class SignInComponent {
-  
+    handleUsernameChange(value: string | number): void {
+        console.log('Username changed:', value);
+    }
+
+    handlePasswordChange(value: string | number): void {
+        console.log('Password changed:', value);
+    }
 }

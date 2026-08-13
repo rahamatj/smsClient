@@ -21,13 +21,15 @@
       </div>
 
       <!-- Form -->
-      <form [formGroup]="form" (ngSubmit)="onSignIn()" class="space-y-6">
+      <form class="space-y-6">
         <div>
           <app-label>Username <span class="text-error-500">*</span></app-label>
           <app-input-field
             type="username"
             placeholder="info@gmail.com"
             class="form-input"
+            [value]="username"
+            (valueChange)="handleUsernameChange($event)"
             required
           />
         </div>
@@ -39,6 +41,8 @@
               [type]="showPassword ? 'text' : 'password'"
               placeholder="Enter your password"
               class="form-input"
+              [value]="password"
+              (valueChange)="handlePasswordChange($event)"
               required
             />
             <span
@@ -72,7 +76,7 @@
         <app-button
           className="w-full"
           size="sm"
-          (btnClick)="onSignIn()"
+          (click)="onSignIn()"
         >
           Sign in
         </app-button>

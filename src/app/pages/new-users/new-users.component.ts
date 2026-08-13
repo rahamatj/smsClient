@@ -6,17 +6,18 @@ import {ButtonComponent} from "@/shared/components/button/button.component";
 import {FormsModule} from "@angular/forms";
 import {HttpClient} from "@angular/common/http";
 import Swal from 'sweetalert2';
+import { environment } from "@/environments/environment";
 
 @Component({
     selector: 'app-new-users',
     imports: [InputFieldComponent, LabelComponent, SelectComponent, ButtonComponent, FormsModule],
     templateUrl: './new-users.component.html',
-    styleUrl: './new-users.component.css',
+    styleUrls: ['./new-users.component.css'],
 })
 export class NewUsersComponent {
 
     private http = inject(HttpClient);
-    private api = 'http://localhost:5270';
+    private api = environment.apiUrl;
 
     username = '';
     password = '';
