@@ -13,10 +13,8 @@ import { SigninFormComponent } from '@/shared/components/auth/signin-form/signin
 })
 export class SignInComponent {
     handleUsernameChange(value: string | number): void {
-        console.log('Username changed:', value);
     }
 
     handlePasswordChange(value: string | number): void {
-        console.log('Password changed:', value);
     }
 }

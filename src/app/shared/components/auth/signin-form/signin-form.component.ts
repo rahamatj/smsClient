@@ -43,20 +43,13 @@ export class SigninFormComponent {
     onSignIn() {
         this.errorMessage = '';
 
-        console.log("OnSignIn");
-
         this.isLoading = true;
         const username = this.username ?? '';
         const password = this.password ?? '';
 
-        console.log("username", username);
-        console.log("password", password);
-
         this.authService.login(username, password)
             .subscribe({
                 next: (response) => {
-                    console.log(response);
-
                     this.isLoading = false;
                     this.router.navigate(['/dashboard']);
                 },
