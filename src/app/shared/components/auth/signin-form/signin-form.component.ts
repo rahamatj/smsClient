@@ -3,7 +3,7 @@ import {LabelComponent} from '../../form/label/label.component';
 import {CheckboxComponent} from '../../form/input/checkbox.component';
 import {ButtonComponent} from '../../ui/button/button.component';
 import {RouterModule} from '@angular/router';
-import {FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AuthService} from '@/services/auth.service';
 import {Router} from '@angular/router';
 import {InputFieldComponent} from "@/shared/components/input/input-field.component";
@@ -41,6 +41,8 @@ export class SigninFormComponent {
     }
 
     onSignIn() {
+        console.log("okay");
+
         this.errorMessage = '';
 
         this.isLoading = true;
