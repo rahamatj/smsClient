@@ -74,7 +74,7 @@ export class AuthService {
     }
 
     return this.http
-      .post<any>(`${environment.apiUrl}api/auth/refreshtoken`, {
+      .post<any>(`${environment.apiUrl}/api/auth/refreshtoken`, {
         userId: userId,
         refreshToken: refreshToken,
       })

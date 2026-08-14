@@ -41,13 +41,13 @@ export class SigninFormComponent {
     }
 
     onSignIn() {
-        console.log("okay");
-
         this.errorMessage = '';
 
         this.isLoading = true;
         const username = this.username ?? '';
         const password = this.password ?? '';
+
+        console.log("username", username);
 
         this.authService.login(username, password)
             .subscribe({
