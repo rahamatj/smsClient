@@ -89,7 +89,7 @@ export class AdminsTableComponent {
         });
     }
 
-    handleSearch(event: Event): void {
+    handleSearchChange(event: Event): void {
         const value = (event.target as HTMLInputElement).value;
         this.search = value.trim().toLowerCase();
         this.applyFilters();
