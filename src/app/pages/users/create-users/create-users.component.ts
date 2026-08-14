@@ -81,12 +81,12 @@ export class CreateUsersComponent {
     }
 
     onSubmit() {
-        this.http.post(`${this.api}/api/users/create`, {
+        this.http.post(`${this.api}/api/admins/create`, {
             username: this.username,
             password: this.password,
             role: Number(this.role),
         }).subscribe({
-            next: () => {
+            next: (res) => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Success',

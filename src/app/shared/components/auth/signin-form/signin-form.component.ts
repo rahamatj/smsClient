@@ -47,8 +47,6 @@ export class SigninFormComponent {
         const username = this.username ?? '';
         const password = this.password ?? '';
 
-        console.log(username, password);
-
         this.authService.login(username, password)
             .subscribe({
                 next: (response) => {
