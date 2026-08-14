@@ -17,9 +17,6 @@ export class AuthService {
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
   login(username: string, password: string): Observable<any> {
-
-    console.log(`[AuthService] Attempting login for user: ${username}`);
-
     return this.http
       .post<any>(`${environment.apiUrl}/api/auth/login`, {
         username,
@@ -27,36 +24,37 @@ export class AuthService {
       })
       .pipe(
         tap((res) => {
-
-          console.log(`[AuthService] Login response for user ${username}:`, res);
-
-          if (res.accessToken && res.refreshToken) {
-            localStorage.setItem("accessToken", res.accessToken);
-            localStorage.setItem("refreshToken", res.refreshToken);
-            localStorage.setItem("userId", res.user.userId || "");
-
-            // Extract expiry from token or use provided value
-            const expiryTime =
-              this.getTokenExpiry(res.accessToken) ||
-              (res.expiresIn
-                ? parseInt(res.expiresIn, 10)
-                : Math.floor(Date.now() / 1000) + 3600);
-            localStorage.setItem("tokenExpiry", expiryTime.toString());
-
-            // Store user data with role
-            if (res.user) {
-              localStorage.setItem("user", JSON.stringify(res.user));
-            } else {
-              console.warn('[AuthService] No user data in login response');
-            }
-
-            this.isAuthenticatedSubject.next(true);
-          } else {
-            console.error('[AuthService] Login response missing tokens:', { 
-              hasAccessToken: !!res.accessToken,
-              hasRefreshToken: !!res.refreshToken
-            });
+          const normalized = this.normalizeAuthResponse(res);
+          if (!normalized.accessToken) {
+            throw new Error("Login response missing access token");
           }
+
+          localStorage.setItem("accessToken", normalized.accessToken);
+
+          if (normalized.refreshToken) {
+            localStorage.setItem("refreshToken", normalized.refreshToken);
+          } else {
+            localStorage.removeItem("refreshToken");
+          }
+
+          if (normalized.userId) {
+            localStorage.setItem("userId", normalized.userId);
+          } else {
+            localStorage.removeItem("userId");
+          }
+
+          const expiryTime =
+            this.getTokenExpiry(normalized.accessToken) ||
+            this.getExpiresAt(normalized.expiresIn);
+          localStorage.setItem("tokenExpiry", expiryTime.toString());
+
+          if (normalized.user) {
+            localStorage.setItem("user", JSON.stringify(normalized.user));
+          } else {
+            localStorage.removeItem("user");
+          }
+
+          this.isAuthenticatedSubject.next(true);
         }),
       );
   }
@@ -65,43 +63,51 @@ export class AuthService {
     const refreshToken = localStorage.getItem("refreshToken");
     const userId = localStorage.getItem("userId");
 
-    if (!refreshToken || !userId) {
-      console.error('[AuthService] Missing refresh token or user ID');
+    if (!refreshToken) {
+      console.error('[AuthService] Missing refresh token');
       this.logout();
       return new Observable((observer) => {
-        observer.error("No refresh token or user ID available");
+        observer.error("No refresh token available");
       });
     }
 
+    const refreshPayload: { refreshToken: string; userId?: string } = {
+      refreshToken,
+    };
+    if (userId) {
+      refreshPayload.userId = userId;
+    }
+
     return this.http
-      .post<any>(`${environment.apiUrl}/api/auth/refreshtoken`, {
-        userId: userId,
-        refreshToken: refreshToken,
-      })
+      .post<any>(`${environment.apiUrl}/api/auth/refreshtoken`, refreshPayload)
       .pipe(
         tap((res) => {
-          
-          if (res.accessToken) {
-            localStorage.setItem("accessToken", res.accessToken);
-
-            // Update refresh token if provided
-            if (res.refreshToken) {
-              localStorage.setItem("refreshToken", res.refreshToken);
-            }
-
-            // Extract expiry from token or use provided value
-            const expiryTime =
-              this.getTokenExpiry(res.accessToken) ||
-              (res.expiresIn
-                ? parseInt(res.expiresIn, 10)
-                : Math.floor(Date.now() / 1000) + 3600);
-            localStorage.setItem("tokenExpiry", expiryTime.toString());
-
-            this.isAuthenticatedSubject.next(true);
-          } else {
+          const normalized = this.normalizeAuthResponse(res);
+          if (!normalized.accessToken) {
             console.error('[AuthService] Refresh response missing access token');
             throw new Error("No access token in refresh response");
           }
+
+          localStorage.setItem("accessToken", normalized.accessToken);
+
+          if (normalized.refreshToken) {
+            localStorage.setItem("refreshToken", normalized.refreshToken);
+          }
+
+          if (normalized.userId) {
+            localStorage.setItem("userId", normalized.userId);
+          }
+
+          if (normalized.user) {
+            localStorage.setItem("user", JSON.stringify(normalized.user));
+          }
+
+          const expiryTime =
+            this.getTokenExpiry(normalized.accessToken) ||
+            this.getExpiresAt(normalized.expiresIn);
+          localStorage.setItem("tokenExpiry", expiryTime.toString());
+
+          this.isAuthenticatedSubject.next(true);
         }),
         catchError((err) => {
           console.error('[AuthService] Token refresh error:', err);
@@ -179,6 +185,58 @@ export class AuthService {
       console.error("Error extracting token expiry:", error);
       return null;
     }
+  }
+
+  private getExpiresAt(expiresIn: unknown): number {
+    if (typeof expiresIn === "number" && Number.isFinite(expiresIn)) {
+      return Math.floor(Date.now() / 1000) + expiresIn;
+    }
+
+    if (typeof expiresIn === "string") {
+      const parsed = parseInt(expiresIn, 10);
+      if (!Number.isNaN(parsed)) {
+        return Math.floor(Date.now() / 1000) + parsed;
+      }
+    }
+
+    return Math.floor(Date.now() / 1000) + 3600;
+  }
+
+  private normalizeAuthResponse(res: any): {
+    accessToken: string | null;
+    refreshToken: string | null;
+    expiresIn: unknown;
+    user: any | null;
+    userId: string | null;
+  } {
+    const source = res?.data ?? res?.result ?? res;
+    const user = source?.user ?? source?.User ?? null;
+
+    const accessToken =
+      source?.accessToken ??
+      source?.token ??
+      source?.jwtToken ??
+      source?.access_token ??
+      null;
+    const refreshToken =
+      source?.refreshToken ??
+      source?.refresh_token ??
+      null;
+
+    const userIdRaw =
+      source?.userId ??
+      user?.userId ??
+      user?.id ??
+      user?.Id ??
+      null;
+
+    return {
+      accessToken: typeof accessToken === "string" && accessToken ? accessToken : null,
+      refreshToken: typeof refreshToken === "string" && refreshToken ? refreshToken : null,
+      expiresIn: source?.expiresIn ?? source?.expires_in ?? null,
+      user,
+      userId: userIdRaw !== null && userIdRaw !== undefined ? String(userIdRaw) : null,
+    };
   }
 }
 

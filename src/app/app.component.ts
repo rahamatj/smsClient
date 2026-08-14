@@ -17,6 +17,10 @@ export class AppComponent {
   authService = inject(AuthService);
 
   ngOnInit(): void {
+    if (!localStorage.getItem('refreshToken')) {
+      return;
+    }
+
     this.authService.refreshToken().subscribe({
       next: (res) => {
       },

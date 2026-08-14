@@ -79,15 +79,12 @@ function handle401Error(
     refreshTokenSubject.next(null);
 
     return authService.refreshToken().pipe(
-      switchMap((response: any) => {
+      switchMap(() => {
         isRefreshing = false;
-
-        const newAccessToken = response.accessToken;
-        const newRefreshToken = response.refreshToken;
-
-        // Update token in storage
-        localStorage.setItem('accessToken', newAccessToken);
-        localStorage.setItem('refreshToken', newRefreshToken);
+        const newAccessToken = localStorage.getItem('accessToken');
+        if (!newAccessToken) {
+          throw new Error('No access token available after refresh');
+        }
 
         // Notify queued requests about the new token
         refreshTokenSubject.next(newAccessToken);
