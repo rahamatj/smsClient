@@ -17,8 +17,10 @@ export class AuthService {
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
   login(username: string, password: string): Observable<any> {
+    const apiBaseUrl = environment.apiUrl || '';
+
     return this.http
-      .post<any>(`${environment.apiUrl}/api/auth/login`, {
+      .post<any>(`${apiBaseUrl}/api/auth/login`, {
         username,
         password,
       })
@@ -78,8 +80,10 @@ export class AuthService {
       refreshPayload.userId = userId;
     }
 
+    const apiBaseUrl = environment.apiUrl || '';
+
     return this.http
-      .post<any>(`${environment.apiUrl}/api/auth/refreshtoken`, refreshPayload)
+      .post<any>(`${apiBaseUrl}/api/auth/refreshtoken`, refreshPayload)
       .pipe(
         tap((res) => {
           const normalized = this.normalizeAuthResponse(res);

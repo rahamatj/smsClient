@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://api.umsconnect.com',
+    apiUrl: 'https://umsconnect.com',
 };
